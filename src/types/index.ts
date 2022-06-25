@@ -10,3 +10,8 @@ export interface TodoType {
   dateCreated: number
   dateLastUpdated: number
 }
+
+export interface IUser {
+  email: string
+  name: string
+}

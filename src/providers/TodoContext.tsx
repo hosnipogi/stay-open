@@ -30,7 +30,13 @@ export const TodoProvider = ({ children }: Props) => {
 
   useEffect(() => {
     if (!loading && !error) {
-      setTodos(data!.todos)
+      const fetched = data!.todos as TodoType[]
+      const mapped = [...fetched].map((todo) => ({
+        ...todo,
+        dateCreated: todo.dateCreated * 1000,
+        dateLastUpdated: todo.dateLastUpdated * 1000,
+      }))
+      setTodos(mapped)
     }
   }, [data, loading, error])
 

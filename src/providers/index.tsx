@@ -1,4 +1,5 @@
 import { TodoProvider } from './TodoContext'
+import { UserProvider } from './UserContext'
 import ApolloProvider from './ApolloClient'
 
 type Props = {
@@ -8,7 +9,9 @@ type Props = {
 const Index = ({ children }: Props) => {
   return (
     <ApolloProvider>
-      <TodoProvider>{children}</TodoProvider>
+      <UserProvider>
+        <TodoProvider>{children}</TodoProvider>
+      </UserProvider>
     </ApolloProvider>
   )
 }
