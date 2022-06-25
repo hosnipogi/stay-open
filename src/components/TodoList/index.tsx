@@ -10,18 +10,28 @@ import { TodoContext } from 'providers/TodoContext'
 import { TodoStatus } from 'types'
 
 const TodoList = () => {
-  const { todos, editTodo, deleteTodo } = useContext(TodoContext)
+  const { todos, editTodo, loading, deleteTodo } = useContext(TodoContext)
   const [sortedTodo, setSortedTodo] = useState(todos)
 
   useEffect(() => {
-    const t = todos.sort((a, b) => {
-      const first = a.status === TodoStatus.INPROGRESS ? 0 : 1
-      const second = b.status === TodoStatus.INPROGRESS ? 0 : 1
+    if (!loading) {
+      const t = [...todos].sort((a, b) => {
+        const first = a.status === TodoStatus.INPROGRESS ? 0 : 1
+        const second = b.status === TodoStatus.INPROGRESS ? 0 : 1
 
-      return first - second
-    })
-    setSortedTodo(t)
-  }, [todos])
+        return first - second
+      })
+      setSortedTodo(t)
+    }
+  }, [todos, loading])
+
+  if (loading) {
+    return (
+      <Typography variant="h6" align="center" color="primary.main" mt={2}>
+        Loading...
+      </Typography>
+    )
+  }
 
   return (
     <Stack gap={2} mt={4}>
@@ -58,7 +68,12 @@ const TodoList = () => {
               <Typography>
                 Last Updated: {new Date(todo.dateLastUpdated).toUTCString()}
               </Typography>
-              <Typography>Status: {todo.status}</Typography>
+              <Typography>
+                Status:{' '}
+                {todo.status === TodoStatus.COMPLETE
+                  ? 'Completed'
+                  : 'In Progress'}
+              </Typography>
             </Box>
             <Box>
               <Button onClick={() => deleteTodo(todo.id)}>

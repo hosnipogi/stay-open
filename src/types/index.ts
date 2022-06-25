@@ -1,6 +1,6 @@
 export enum TodoStatus {
-  INPROGRESS = 'In Progress',
-  COMPLETE = 'Complete',
+  INPROGRESS = 'INPROGRESS',
+  COMPLETE = 'COMPLETE',
 }
 
 export interface TodoType {

@@ -6,7 +6,7 @@ import Button from '@mui/material/Button'
 import { Add } from '@mui/icons-material'
 import { TodoContext } from 'providers/TodoContext'
 
-const TodoComponent = () => {
+const AddTodoComponent = () => {
   const { addTodo } = useContext(TodoContext)
   const [text, setText] = useState('')
 
@@ -46,4 +46,4 @@ const TodoComponent = () => {
   )
 }
 
-export default TodoComponent
+export default AddTodoComponent
