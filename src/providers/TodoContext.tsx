@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect } from 'react'
 import { TodoStatus, TodoType } from 'types'
-import { useMutation, useQuery, gql } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
+import { FETCH_TODOS } from 'graphql/query'
+import { ADD_TODO, UPDATE_TODO, DELETE_TODO } from 'graphql/mutations'
 
 interface ITodo {
   todos: TodoType[]
@@ -15,43 +17,6 @@ interface ITodo {
 type Props = {
   children: React.ReactNode
 }
-
-const FETCH_TODOS = gql`
-  query Todos {
-    todos {
-      id
-      status
-      title
-      dateLastUpdated
-      dateCreated
-    }
-  }
-`
-
-const ADD_TODO = gql`
-  mutation AddTodo($title: String!) {
-    addTodo(title: $title) {
-      id
-      dateCreated
-      dateLastUpdated
-    }
-  }
-`
-
-const UPDATE_TODO = gql`
-  mutation UpdateTodo($id: ID!) {
-    updateTodo(id: $id) {
-      status
-      dateLastUpdated
-    }
-  }
-`
-
-const DELETE_TODO = gql`
-  mutation DeleteTodo($id: ID!) {
-    deleteTodo(id: $id)
-  }
-`
 
 export const TodoContext = createContext<ITodo>({} as ITodo)
 
