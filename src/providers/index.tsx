@@ -1,6 +1,7 @@
 import { TodoProvider } from './TodoContext'
 import { UserProvider } from './UserContext'
 import ApolloProvider from './ApolloClient'
+import ThemeProvider from './ThemeContext'
 import SnackBarProvider from './SnackBarContext'
 
 type Props = {
@@ -10,11 +11,13 @@ type Props = {
 const Index = ({ children }: Props) => {
   return (
     <ApolloProvider>
-      <SnackBarProvider>
-        <UserProvider>
-          <TodoProvider>{children}</TodoProvider>
-        </UserProvider>
-      </SnackBarProvider>
+      <ThemeProvider>
+        <SnackBarProvider>
+          <UserProvider>
+            <TodoProvider>{children}</TodoProvider>
+          </UserProvider>
+        </SnackBarProvider>
+      </ThemeProvider>
     </ApolloProvider>
   )
 }

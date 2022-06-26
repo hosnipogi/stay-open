@@ -7,9 +7,13 @@ type Props = {
   children: React.ReactNode
 }
 const index = ({ children }: Props) => (
-  <Box sx={{ pb: 7 }}>
+  <Box sx={{ backgroundColor: 'customTheme.background' }}>
     <Navbar />
-    <Container disableGutters maxWidth="lg" sx={{ minHeight: '62vh', mt: 10 }}>
+    <Container
+      disableGutters
+      maxWidth="lg"
+      sx={{ minHeight: 'calc(100vh - 64px)', height: '100%', py: 10 }}
+    >
       {children}
     </Container>
   </Box>

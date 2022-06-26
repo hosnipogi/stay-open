@@ -15,3 +15,20 @@ export interface IUser {
   email: string | undefined
   name: string | undefined
 }
+
+declare module '@mui/material/styles' {
+  interface Palette {
+    customTheme: { [key: string]: string }
+  }
+  interface PaletteOptions {
+    customTheme: {
+      [key: string]: string
+    }
+  }
+}
+
+declare module '@mui/material/Button' {
+  interface ButtonPropsVariantOverrides {
+    custom: true
+  }
+}

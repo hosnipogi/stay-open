@@ -6,7 +6,8 @@ import Button from '@mui/material/Button'
 import { UserContext } from 'providers/UserContext'
 
 const Appbar = () => {
-  const { signInWithGoogle, signOut, user } = useContext(UserContext)
+  const { authIsLoading, signInWithGoogle, signOut, user } =
+    useContext(UserContext)
 
   const handleSignIn = () => {
     signInWithGoogle()
@@ -17,17 +18,26 @@ const Appbar = () => {
   }
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: 'customTheme.navbar' }}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ flexGrow: 1 }}
+          color="primary"
+        >
           {user.email}
         </Typography>
         {user.email ? (
-          <Button color="inherit" onClick={handleSignOut}>
+          <Button onClick={handleSignOut} variant="contained">
             Logout
           </Button>
         ) : (
-          <Button color="inherit" onClick={handleSignIn}>
+          <Button
+            variant="contained"
+            onClick={handleSignIn}
+            disabled={authIsLoading}
+          >
             Login
           </Button>
         )}

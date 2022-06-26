@@ -1,15 +1,17 @@
 import { useContext, useState, ChangeEvent } from 'react'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
 import { Add } from '@mui/icons-material'
 import { TodoContext } from 'providers/TodoContext'
 import { UserContext } from 'providers/UserContext'
 
 const AddTodoComponent = () => {
   const { addTodo } = useContext(TodoContext)
-  const { signInWithGoogle, isLoggedIn } = useContext(UserContext)
+  const { signInWithGoogle, isLoggedIn, authIsLoading } =
+    useContext(UserContext)
   const [text, setText] = useState('')
 
   const handleChange = (
@@ -37,13 +39,13 @@ const AddTodoComponent = () => {
               onChange={handleChange}
               required
               value={text}
+              InputLabelProps={{
+                sx: {
+                  color: 'primary.main',
+                },
+              }}
             />
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ marginTop: 5 }}
-              type="submit"
-            >
+            <Button variant="contained" sx={{ marginTop: 5 }} type="submit">
               <Add />
               Add
             </Button>
@@ -53,13 +55,20 @@ const AddTodoComponent = () => {
         <Box sx={{ width: '100%' }}>
           <Button
             variant="contained"
-            color="primary"
             sx={{ marginTop: 5 }}
             type="submit"
             onClick={handleSignIn}
             fullWidth={true}
+            disabled={authIsLoading}
           >
-            Sign in with Google to add TODOs!
+            {authIsLoading ? (
+              <>
+                <span>Signing In..</span>{' '}
+                <CircularProgress size={16} sx={{ ml: 2 }} />
+              </>
+            ) : (
+              'Sign in with Google to add ToDOs!'
+            )}
           </Button>
         </Box>
       )}

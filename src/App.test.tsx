@@ -34,7 +34,7 @@ describe('<TodoProvider />', () => {
       </MockedProvider>
     )
 
-    await screen.findAllByText('Loading...')
+    await screen.findAllByText('Loading')
     await screen.findAllByText('Test Todo')
   })
 })

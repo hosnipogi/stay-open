@@ -17,6 +17,7 @@ type Props = {
 interface IUserValues {
   user: IUser
   setUser: React.Dispatch<React.SetStateAction<IUser>>
+  authIsLoading: boolean
   isLoggedIn: boolean
   signInWithGoogle: () => void
   signOut: () => void
@@ -29,6 +30,7 @@ export const UserContext = createContext<IUserValues>({} as IUserValues)
 export const UserProvider = ({ children }: Props) => {
   const { displaySnackbar } = useContext(SnackBarContext)
   const [user, setUser] = useState<IUser>({ email: undefined, name: undefined })
+  const [authIsLoading, setAuthIsLoading] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(
     typeof user.email !== 'undefined'
   )
@@ -53,10 +55,13 @@ export const UserProvider = ({ children }: Props) => {
 
   const signInWithGoogle = async () => {
     try {
+      setAuthIsLoading(true)
       const { user: fbUser } = await signInWithPopup(auth, provider)
+      setAuthIsLoading(false)
       setUser({ name: fbUser.displayName!, email: fbUser.email! })
       displaySnackbar(`Welcome ${fbUser.displayName}`)
     } catch (e) {
+      setAuthIsLoading(false)
       if (e instanceof FirebaseError) {
         displaySnackbar(e.message, 'error')
       }
@@ -70,6 +75,7 @@ export const UserProvider = ({ children }: Props) => {
   }
 
   const userValues = {
+    authIsLoading,
     signInWithGoogle,
     signOut,
     user,
