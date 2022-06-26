@@ -1,8 +1,9 @@
-import { createContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 import { TodoStatus, TodoType } from 'types'
 import { useMutation, useQuery } from '@apollo/client'
 import { FETCH_TODOS } from 'graphql/query'
 import { ADD_TODO, UPDATE_TODO, DELETE_TODO } from 'graphql/mutations'
+import { UserContext } from 'providers/UserContext'
 
 interface ITodo {
   todos: TodoType[]
@@ -22,6 +23,7 @@ export const TodoContext = createContext<ITodo>({} as ITodo)
 
 export const TodoProvider = ({ children }: Props) => {
   const [todos, setTodos] = useState<TodoType[]>([])
+  const { isLoggedIn } = useContext(UserContext)
 
   const { loading, error, data } = useQuery<{ todos: TodoType[] }>(FETCH_TODOS)
   const [createTodo] = useMutation(ADD_TODO)
@@ -41,50 +43,67 @@ export const TodoProvider = ({ children }: Props) => {
   }, [data, loading, error])
 
   const addTodo: ITodo['addTodo'] = async (title) => {
-    const { data } = (await createTodo({
-      variables: {
-        title,
-      },
-    })) as any
+    try {
+      if (!isLoggedIn) throw new Error('Not logged In')
+      const { data } = (await createTodo({
+        variables: {
+          title,
+        },
+      })) as any
 
-    const newTodo: TodoType = {
-      id: data.addTodo.id,
-      title: title.trim(),
-      dateCreated: data.addTodo.dateCreated * 1000,
-      dateLastUpdated: data.addTodo.dateLastUpdated * 1000,
-      status: TodoStatus.INPROGRESS,
+      const newTodo: TodoType = {
+        id: data.addTodo.id,
+        title: title.trim(),
+        dateCreated: data.addTodo.dateCreated * 1000,
+        dateLastUpdated: data.addTodo.dateLastUpdated * 1000,
+        status: TodoStatus.INPROGRESS,
+      }
+
+      setTodos([...todos, newTodo])
+    } catch (e) {
+      console.log(e)
     }
-
-    setTodos([...todos, newTodo])
   }
 
   const editTodo: ITodo['editTodo'] = async (id) => {
-    const { data } = (await updateTodo({
-      variables: {
-        id,
-      },
-    })) as any
+    try {
+      if (!isLoggedIn) throw new Error('Not logged In')
+      const { data } = (await updateTodo({
+        variables: {
+          id,
+        },
+      })) as any
 
-    const updatedTodos = todos.map<TodoType>((todo) => {
-      if (todo.id === id) {
-        return {
-          ...todo,
-          status: data.updateTodo.status,
-          dateLastUpdated: data.updateTodo.dateLastUpdated * 1000,
+      const updatedTodos = todos.map<TodoType>((todo) => {
+        if (todo.id === id) {
+          return {
+            ...todo,
+            status: data.updateTodo.status,
+            dateLastUpdated: data.updateTodo.dateLastUpdated * 1000,
+          }
         }
-      }
-      return todo
-    })
+        return todo
+      })
 
-    setTodos(updatedTodos)
+      setTodos(updatedTodos)
+    } catch (e) {
+      console.info(e)
+    }
   }
 
   const deleteTodo: ITodo['deleteTodo'] = async (id) => {
-    const deleted = await destroyTodo({
-      variables: { id },
-    })
-    if (deleted) {
-      setTodos(todos.length === 1 ? [] : todos.filter((todo) => todo.id !== id))
+    try {
+      if (!isLoggedIn) throw new Error('Not logged In')
+      const deleted = await destroyTodo({
+        variables: { id },
+      })
+      if (deleted) {
+        setTodos(
+          todos.length === 1 ? [] : todos.filter((todo) => todo.id !== id)
+        )
+      }
+    } catch (e) {
+      console.info(e)
     }
   }
 

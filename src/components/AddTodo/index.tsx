@@ -9,7 +9,7 @@ import { UserContext } from 'providers/UserContext'
 
 const AddTodoComponent = () => {
   const { addTodo } = useContext(TodoContext)
-  const { signInWithGoogle, user } = useContext(UserContext)
+  const { signInWithGoogle, isLoggedIn } = useContext(UserContext)
   const [text, setText] = useState('')
 
   const handleChange = (
@@ -28,7 +28,7 @@ const AddTodoComponent = () => {
 
   return (
     <Box>
-      {user.email ? (
+      {isLoggedIn ? (
         <form onSubmit={createTodo}>
           <FormControl fullWidth>
             <TextField

@@ -12,6 +12,6 @@ export interface TodoType {
 }
 
 export interface IUser {
-  email: string
-  name: string
+  email: string | undefined
+  name: string | undefined
 }

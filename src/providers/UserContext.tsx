@@ -15,6 +15,7 @@ type Props = {
 interface IUserValues {
   user: IUser
   setUser: React.Dispatch<React.SetStateAction<IUser>>
+  isLoggedIn: boolean
   signInWithGoogle: () => void
   signOut: () => void
 }
@@ -24,12 +25,23 @@ const provider = new GoogleAuthProvider()
 export const UserContext = createContext<IUserValues>({} as IUserValues)
 
 export const UserProvider = ({ children }: Props) => {
-  const [user, setUser] = useState<IUser>({ email: '', name: '' })
+  const [user, setUser] = useState<IUser>({ email: undefined, name: undefined })
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    typeof user.email !== 'undefined'
+  )
+
+  useEffect(() => {
+    if (typeof user.email !== 'undefined') {
+      setIsLoggedIn(true)
+    } else {
+      setIsLoggedIn(false)
+    }
+  }, [user.email])
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser({ name: user.displayName!, email: user.email! })
+      if (user && user.displayName && user.email) {
+        setUser({ name: user.displayName, email: user.email })
       }
     })
 
@@ -47,13 +59,14 @@ export const UserProvider = ({ children }: Props) => {
 
   const signOut = () => {
     signOutGoogle(auth)
-    setUser({ name: '', email: '' })
+    setUser({ name: undefined, email: undefined })
   }
 
   const userValues = {
     signInWithGoogle,
     signOut,
     user,
+    isLoggedIn,
     setUser,
   }
 

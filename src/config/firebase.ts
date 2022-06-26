@@ -19,6 +19,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
-getAnalytics(app)
 
-export const auth = getAuth(app)
+// assign 'Auth' to {} in test mode
+function checkIfInTest() {
+  if (process.env.NODE_ENV === 'test') return {} as ReturnType<typeof getAuth>
+  getAnalytics(app)
+  return getAuth(app)
+}
+
+export const auth = checkIfInTest()
