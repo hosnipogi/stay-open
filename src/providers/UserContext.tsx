@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -7,6 +7,8 @@ import {
 } from 'firebase/auth'
 import { auth } from 'config/firebase'
 import { IUser } from 'types'
+import { SnackBarContext } from './SnackBarContext'
+import { FirebaseError } from 'firebase/app'
 
 type Props = {
   children: React.ReactNode
@@ -25,6 +27,7 @@ const provider = new GoogleAuthProvider()
 export const UserContext = createContext<IUserValues>({} as IUserValues)
 
 export const UserProvider = ({ children }: Props) => {
+  const { displaySnackbar } = useContext(SnackBarContext)
   const [user, setUser] = useState<IUser>({ email: undefined, name: undefined })
   const [isLoggedIn, setIsLoggedIn] = useState(
     typeof user.email !== 'undefined'
@@ -50,15 +53,19 @@ export const UserProvider = ({ children }: Props) => {
 
   const signInWithGoogle = async () => {
     try {
-      const { user } = await signInWithPopup(auth, provider)
-      setUser({ name: user.displayName!, email: user.email! })
+      const { user: fbUser } = await signInWithPopup(auth, provider)
+      setUser({ name: fbUser.displayName!, email: fbUser.email! })
+      displaySnackbar(`Welcome ${fbUser.displayName}`)
     } catch (e) {
-      console.info({ e })
+      if (e instanceof FirebaseError) {
+        displaySnackbar(e.message, 'error')
+      }
     }
   }
 
   const signOut = () => {
     signOutGoogle(auth)
+    displaySnackbar(`Goodbye ${user.name}!`)
     setUser({ name: undefined, email: undefined })
   }
 

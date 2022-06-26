@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@apollo/client'
 import { FETCH_TODOS } from 'graphql/query'
 import { ADD_TODO, UPDATE_TODO, DELETE_TODO } from 'graphql/mutations'
 import { UserContext } from 'providers/UserContext'
+import { SnackBarContext } from 'providers/SnackBarContext'
 
 interface ITodo {
   todos: TodoType[]
@@ -24,6 +25,7 @@ export const TodoContext = createContext<ITodo>({} as ITodo)
 export const TodoProvider = ({ children }: Props) => {
   const [todos, setTodos] = useState<TodoType[]>([])
   const { isLoggedIn } = useContext(UserContext)
+  const { displaySnackbar } = useContext(SnackBarContext)
 
   const { loading, error, data } = useQuery<{ todos: TodoType[] }>(FETCH_TODOS)
   const [createTodo] = useMutation(ADD_TODO)
@@ -60,8 +62,11 @@ export const TodoProvider = ({ children }: Props) => {
       }
 
       setTodos([...todos, newTodo])
+      displaySnackbar('Added Todo')
     } catch (e) {
-      console.log(e)
+      if (e instanceof Error) {
+        displaySnackbar(e.message, 'error')
+      }
     }
   }
 
@@ -86,8 +91,11 @@ export const TodoProvider = ({ children }: Props) => {
       })
 
       setTodos(updatedTodos)
+      displaySnackbar('Updated Todo')
     } catch (e) {
-      console.info(e)
+      if (e instanceof Error) {
+        displaySnackbar(e.message, 'error')
+      }
     }
   }
 
@@ -101,9 +109,12 @@ export const TodoProvider = ({ children }: Props) => {
         setTodos(
           todos.length === 1 ? [] : todos.filter((todo) => todo.id !== id)
         )
+        displaySnackbar('Success')
       }
     } catch (e) {
-      console.info(e)
+      if (e instanceof Error) {
+        displaySnackbar(e.message, 'error')
+      }
     }
   }
 
